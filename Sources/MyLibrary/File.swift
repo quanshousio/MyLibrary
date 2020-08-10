@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(iOS 13.0, tvOS 13.0, *)
 struct ToastView: View {
   @State private var presenting: Bool = false
 

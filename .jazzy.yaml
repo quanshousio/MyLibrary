@@ -1,0 +1,18 @@
+author: Quan Tran
+author_url: https://github.com/quanshousio
+documentation: Docs/*.md
+github_url: https://github.com/quanshousio/MyLibrary
+#github_file_prefix: https://github.com/quanshousio/ToastUI/tree/1.0.0
+#hide_documentation_coverage: true
+module: MyLibrary
+#module_version: 1.0.0
+output: Docs
+readme: README.md
+#skip_undocumented: true
+swift_build_tool: xcodebuild
+theme: fullwidth
+xcodebuild_arguments:
+  - -sdk
+  - iphoneos
+  - -scheme
+  - MyLibrary

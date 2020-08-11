@@ -9,8 +9,16 @@ import SwiftUI
 
 /// Another Struct
 public struct AnotherStruct: Identifiable {
+  /// ID
   public var id: String
+  /// Boolean
   public var flag: Bool
+}
+
+/// Another Hello World
+public class HelloWorld {
+  /// Number
+  public var num: Int
 }
 
 /// This is a ToastView

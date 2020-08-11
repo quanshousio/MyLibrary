@@ -18,7 +18,7 @@ public struct AnotherStruct: Identifiable {
 /// Another Hello World
 public class HelloWorld {
   /// Number
-  public var num: Int
+  public var num: Int = 0
 }
 
 /// This is a ToastView

@@ -7,10 +7,18 @@
 
 import SwiftUI
 
-struct ToastView: View {
+/// Another Struct
+public struct AnotherStruct: Identifiable {
+  public var id: String
+  public var flag: Bool
+}
+
+/// This is a ToastView
+public struct ToastView: View {
   @State private var presenting: Bool = false
 
-  var body: some View {
+  /// This is the body in ToastView
+  public var body: some View {
     Text("Hello")
       .alert(isPresented: $presenting, content: {
         Alert(title: Text("Hello"))

@@ -6,7 +6,7 @@ github_url: https://github.com/quanshousio/MyLibrary
 #hide_documentation_coverage: true
 module: MyLibrary
 #module_version: 1.0.0
-output: Docs
+output: docs
 readme: README.md
 #skip_undocumented: true
 swift_build_tool: xcodebuild

@@ -1,3 +1,3 @@
 # MyLibrary
 
-A description of this package. Wow wow wow.
+A description of this package.

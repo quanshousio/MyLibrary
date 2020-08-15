@@ -19,8 +19,15 @@ jobs:
     - name: Set version
       run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
     - name: Jazzy Docs
-      uses: quanshousio/publish-jazzy-docs@v1
-      with:
-        personal_access_token: ${{ secrets.ACCESS_TOKEN }}
-        config: .jazzy.yaml
-        tag: $RELEASE_VERSION
+      run: |
+        sudo gem install jazzy
+        jazzy --module-version "$RELEASE_VERSION"
+        git remote update
+        git fetch origin gh-pages:gh-pages --depth 1
+        git checkout gh-pages
+        git config user.name  "Travis"
+        git config user.email "jazzy@travis-ci.com"
+        git add .
+        git commit -m "Update documentation for $RELEASE_VERSION"
+        git remote add secure-origin https://${{ secret.ACCESS_TOKEN }}@github.com/MyLibrary.git
+        git push secure-origin gh-pages

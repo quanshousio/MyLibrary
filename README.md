@@ -1,3 +1,3 @@
 # MyLibrary
 
-A description of this package. TeestAAAAAAA
+A description of this package.

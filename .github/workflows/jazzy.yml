@@ -16,8 +16,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Set version
+      run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
     - name: Jazzy Docs
-      uses: steven0351/publish-jazzy-docs@v1
+      uses: quanshousio/publish-jazzy-docs@v1
       with:
         personal_access_token: ${{ secrets.ACCESS_TOKEN }}
         config: .jazzy.yaml
+        tag: $RELEASE_VERSION

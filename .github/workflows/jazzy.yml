@@ -29,5 +29,5 @@ jobs:
         git config user.email "jazzy@travis-ci.com"
         git add .
         git commit -m "Update documentation for $RELEASE_VERSION"
-        git remote add secure-origin https://${{ secret.ACCESS_TOKEN }}@github.com/MyLibrary.git
+        git remote add secure-origin https://${{ secrets.ACCESS_TOKEN }}@github.com/MyLibrary.git
         git push secure-origin gh-pages

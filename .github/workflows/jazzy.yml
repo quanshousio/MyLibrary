@@ -16,7 +16,11 @@ jobs:
     - name: Install jazzy
       run: sudo gem install jazzy
     - name: Run jazzy
-      run: jazzy --config ./.jazzy.yaml --module-version "$VERSION" --github-file-prefix "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$VERSION"
+      run: |
+        jazzy \
+        --config ./.jazzy.yaml \
+        --module-version "$VERSION" \
+        --github-file-prefix "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$VERSION"
     - name: Update gh-pages
       run: |
         git remote update
@@ -25,8 +29,8 @@ jobs:
         git checkout gh-pages
         rm -rf ./*
         mv ../docs/* .
-        git config user.name "Quan Tran"
-        git config user.email "quan@shousio.com"
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@gha-ci.com"
         git add .
         git commit -m "Update documentation for $VERSION"
         git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"

@@ -21,13 +21,13 @@ jobs:
     - name: Jazzy Docs
       run: |
         sudo gem install jazzy
-        jazzy --module-version "$RELEASE_VERSION"
+        jazzy --module-version $RELEASE_VERSION
         git remote update
-        git fetch origin gh-pages:gh-pages --depth 1
+        git fetch origin gh-pages
         git checkout gh-pages
-        git config user.name  "Travis"
-        git config user.email "jazzy@travis-ci.com"
+        git config user.name "Quan Tran"
+        git config user.email "jazzy@gha-ci.com"
         git add .
         git commit -m "Update documentation for $RELEASE_VERSION"
-        git remote add secure-origin https://${{ secrets.ACCESS_TOKEN }}@github.com/MyLibrary.git
-        git push secure-origin gh-pages
+        git remote add github "https://$GITHUB_ACTOR:$ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+        git push github gh-pages

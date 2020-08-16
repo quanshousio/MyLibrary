@@ -1,3 +1,3 @@
 # MyLibrary
 
-A description of this package. Test
+A description of this package.

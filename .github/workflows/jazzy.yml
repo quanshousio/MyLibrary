@@ -16,18 +16,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set version
-      run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
-    - name: Jazzy Docs
+    - name: Test
       run: |
-        sudo gem install jazzy
-        jazzy --module-version $RELEASE_VERSION
-        git remote update
-        git fetch origin gh-pages
-        git checkout gh-pages
-        git config user.name "Quan Tran"
-        git config user.email "jazzy@gha-ci.com"
-        git add .
-        git commit -m "Update documentation for $RELEASE_VERSION"
-        git remote add github "https://$GITHUB_ACTOR:$ACCESS_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-        git push github gh-pages
+        ls
+        cd ..
+        ls
+        

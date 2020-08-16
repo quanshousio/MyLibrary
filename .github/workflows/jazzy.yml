@@ -2,9 +2,8 @@ name: Jazzy
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -12,6 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Get the version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      run: echo ::set-env name=VERSION::${GITHUB_REF/refs\/tags\//}
     - name: Echo version
       run: echo $VERSION

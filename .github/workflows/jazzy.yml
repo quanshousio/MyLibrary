@@ -30,7 +30,7 @@ jobs:
         rm -rf ./*
         mv ../docs/* .
         git config user.name "$GITHUB_ACTOR"
-        git config user.email "$GITHUB_ACTOR@gha-ci.com"
+        git config user.email "${GITHUB_ACTOR:0:4}@${GITHUB_ACTOR:4:7}.com"
         git add .
         git commit -m "Update documentation for $VERSION"
         git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"

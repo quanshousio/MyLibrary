@@ -3,34 +3,28 @@
 </h1>
 
 <h3 align="center">
-	ToastUI • A simple way to show toast in SwiftUI
+  A simple way to show toast in SwiftUI
 </h3>
 
 <p align="center">
-	<strong><a href="https://quanshousio.github.io/ToastUI/">Documentation</a></strong>
-	•
+  <strong><a href="https://quanshousio.github.io/ToastUI/">Documentation</a></strong>
+  •
   <strong><a href="#getting-started">Example</a></strong>
   •
-	<strong><a href="CHANGELOG.md">Change Log</a></strong>
+  <strong><a href="CHANGELOG.md">Change Log</a></strong>
 </p>
 
 <p align="center">
-	<a href="#swift-package-manager"><img
-		alt="Swift Package Manager"
-		src="https://img.shields.io/badge/SwiftPM-compatible-informational"></a>
-	<a href="#cocoapods"><img
-		alt="CocoaPods"
-		src="https://img.shields.io/cocoapods/v/ToastUI"></a>
-	<a href="#requirements"><img
-		alt="Platform"
-		src="https://img.shields.io/cocoapods/p/ToastUI"></a>
-	<a href="#license"><img
-		alt="License"
-		src="https://img.shields.io/cocoapods/l/ToastUI"></a>
+  <a href="#swift-package-manager"><img alt="Swift Package Manager"
+      src="https://img.shields.io/badge/SwiftPM-compatible-informational"></a>
+  <a href="#cocoapods"><img alt="CocoaPods" src="https://img.shields.io/cocoapods/v/ToastUI"></a>
+  <a href="#requirements">
+    <img alt="Platform" src="https://img.shields.io/cocoapods/p/ToastUI"></a>
+  <a href="#license"><img alt="License" src="https://img.shields.io/cocoapods/l/ToastUI"></a>
 </p>
 
 <p align="center">
-	<img src="https://user-images.githubusercontent.com/29722055/89260921-d4f74c00-d5f2-11ea-8a5d-31be17671139.gif">
+  <img src="https://user-images.githubusercontent.com/29722055/89260921-d4f74c00-d5f2-11ea-8a5d-31be17671139.gif" alt="demo" width="42%">
 </p>
 
 ## Overview
@@ -41,9 +35,6 @@
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Documentation](#documentation)
-  * [Presenting](#presenting)
-  * [ToastView](#toastview)
-  * [Styling](#styling)
 * [Contributing](#contributing)
 * [Author](#author)
 * [Acknowledgements](#acknowledgements)

@@ -58,8 +58,10 @@ internal struct ToastViewIsPresentedModifier<QTContent>: ViewModifier where QTCo
   internal func body(content: Content) -> some View {
     content
       .preference(key: ToastViewPreferenceKey.self, value: isPresented)
-      .onPreferenceChange(ToastViewPreferenceKey.self) {
-        present($0)
+      .onPreferenceChange(ToastViewPreferenceKey.self) { value in
+        DispatchQueue.main.asyncAfter {
+          present(value)
+        }
       }
   }
 }
@@ -112,8 +114,10 @@ where Item: Identifiable, QTContent: View
   internal func body(content: Content) -> some View {
     content
       .preference(key: ToastViewPreferenceKey.self, value: item != nil)
-      .onPreferenceChange(ToastViewPreferenceKey.self) {
-        present($0)
+      .onPreferenceChange(ToastViewPreferenceKey.self) { value in
+        DispatchQueue.main.asyncAfter {
+          present(value)
+        }
       }
   }
 }

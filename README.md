@@ -1,30 +1,30 @@
 <h1 align="center">
-  <img src="logo.svg" alt="ToastUI logo" width="50%">
+<img src="ToastUI.svg" alt="ToastUI logo" width="50%">
 </h1>
 
 <h3 align="center">
-  A simple way to show toast in SwiftUI
+A simple way to show toast in SwiftUI
 </h3>
 
 <p align="center">
-  <strong><a href="https://quanshousio.github.io/ToastUI/">Documentation</a></strong>
-  •
-  <strong><a href="#getting-started">Example</a></strong>
-  •
-  <strong><a href="CHANGELOG.md">Change Log</a></strong>
+<strong><a href="https://quanshousio.github.io/ToastUI/">Documentation</a></strong>
+•
+<strong><a href="#getting-started">Example</a></strong>
+•
+<strong><a href="CHANGELOG.md">Change Log</a></strong>
 </p>
 
 <p align="center">
-  <a href="#swift-package-manager"><img alt="Swift Package Manager"
-      src="https://img.shields.io/badge/SwiftPM-compatible-informational"></a>
-  <a href="#cocoapods"><img alt="CocoaPods" src="https://img.shields.io/cocoapods/v/ToastUI"></a>
-  <a href="#requirements">
-    <img alt="Platform" src="https://img.shields.io/cocoapods/p/ToastUI"></a>
-  <a href="#license"><img alt="License" src="https://img.shields.io/cocoapods/l/ToastUI"></a>
+<a href="#swift-package-manager"><img alt="Swift Package Manager"
+src="https://img.shields.io/badge/SwiftPM-compatible-informational"></a>
+<a href="#cocoapods"><img alt="CocoaPods" src="https://img.shields.io/cocoapods/v/ToastUI"></a>
+<a href="#requirements">
+<img alt="Platform" src="https://img.shields.io/cocoapods/p/ToastUI"></a>
+<a href="#license"><img alt="License" src="https://img.shields.io/cocoapods/l/ToastUI"></a>
 </p>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/29722055/89260921-d4f74c00-d5f2-11ea-8a5d-31be17671139.gif" alt="demo" width="42%">
+<img src="https://user-images.githubusercontent.com/29722055/89260921-d4f74c00-d5f2-11ea-8a5d-31be17671139.gif" alt="demo" width="42%">
 </p>
 
 ## Overview
@@ -48,26 +48,26 @@ Here is an example to present an indefinite progress indicator HUD and dismiss i
 
 ``` swift
 struct ContentView: View {
-  @State private var presentingToast: Bool = false
+@State private var presentingToast: Bool = false
 
-  var body: some View {
-    Button {
-      presentingToast = true
-    } label: {
-      Text("Tap me")
-        .bold()
-        .foregroundColor(.white)
-        .padding()
-        .background(Color.accentColor)
-        .cornerRadius(8.0)
-    }
-    .toast(isPresented: $presentingToast, dismissAfter: 2.0) {
-      print("Toast dismissed")
-    } content: {
-      ToastView("Loading...")
-        .toastViewStyle(IndefiniteProgressToastViewStyle())
-    }
-  }
+var body: some View {
+Button {
+presentingToast = true
+} label: {
+Text("Tap me")
+.bold()
+.foregroundColor(.white)
+.padding()
+.background(Color.accentColor)
+.cornerRadius(8.0)
+}
+.toast(isPresented: $presentingToast, dismissAfter: 2.0) {
+print("Toast dismissed")
+} content: {
+ToastView("Loading...")
+.toastViewStyle(IndefiniteProgressToastViewStyle())
+}
+}
 }
 ```
 
@@ -77,41 +77,41 @@ You can also present custom alerts or any SwiftUI views of your choice.
 
 ``` swift
 struct ContentView: View {
-  @State private var presentingToast: Bool = false
+@State private var presentingToast: Bool = false
 
-  var body: some View {
-    Button {
-      presentingToast = true
-    } label: {
-      Text("Tap me")
-        .bold()
-        .foregroundColor(.white)
-        .padding()
-        .background(Color.accentColor)
-        .cornerRadius(8.0)
-    }
-    .toast(isPresented: $presentingToast) {
-      ToastView {
-        VStack {
-          Text("Hello from ToastUI")
-            .padding(.bottom)
-            .multilineTextAlignment(.center)
+var body: some View {
+Button {
+presentingToast = true
+} label: {
+Text("Tap me")
+.bold()
+.foregroundColor(.white)
+.padding()
+.background(Color.accentColor)
+.cornerRadius(8.0)
+}
+.toast(isPresented: $presentingToast) {
+ToastView {
+VStack {
+Text("Hello from ToastUI")
+.padding(.bottom)
+.multilineTextAlignment(.center)
 
-          Button {
-            presentingToast = false
-          } label: {
-            Text("OK")
-              .bold()
-              .foregroundColor(.white)
-              .padding(.horizontal)
-              .padding(.vertical, 12.0)
-              .background(Color.accentColor)
-              .cornerRadius(8.0)
-          }
-        }
-      }
-    }
-  }
+Button {
+presentingToast = false
+} label: {
+Text("OK")
+.bold()
+.foregroundColor(.white)
+.padding(.horizontal)
+.padding(.vertical, 12.0)
+.background(Color.accentColor)
+.cornerRadius(8.0)
+}
+}
+}
+}
+}
 }
 ```
 
@@ -138,7 +138,7 @@ For package integration, add the following line to the `dependencies` parameter 
 
 ``` swift
 dependencies: [
-    .package(url: "https://github.com/quanshousio/ToastUI.git", from: "1.0.0")
+.package(url: "https://github.com/quanshousio/ToastUI.git", from: "1.0.0")
 ]
 ```
 
@@ -160,7 +160,7 @@ For more detailed documentation, please see **[here](https://quanshousio.github.
 
 ``` swift
 .toast(isPresented: $presentingToast) {
-  // your SwiftUI views here
+// your SwiftUI views here
 }
 ```
 
@@ -175,7 +175,7 @@ There are two types of `toast()` view modifier. For more usage information, chec
 
 ``` swift
 .toast(isPresented: $presentingToast) {
-  ToastView("Hello from ToastUI")
+ToastView("Hello from ToastUI")
 }
 ```
 
@@ -199,9 +199,9 @@ Layout of `ToastView` is demonstrated in this figure below.
 +-----------------------------+
 
 ToastView(<Label>) {
-  <Content>
+<Content>
 } background: {
-  <Background>
+<Background>
 }
 ```
 
@@ -209,16 +209,16 @@ ToastView(<Label>) {
 
 ``` swift
 .toast(isPresented: $presentingToast) {
-  ToastView("Saved!") {
-    // custom content views
-    Image(systemName: "arrow.down.doc.fill")
-      .font(.system(size: 48))
-      .foregroundColor(.green)
-      .padding()
-  } background: {
-    // custom background views
-    Color.green.opacity(0.1)
-  }
+ToastView("Saved!") {
+// custom content views
+Image(systemName: "arrow.down.doc.fill")
+.font(.system(size: 48))
+.foregroundColor(.green)
+.padding()
+} background: {
+// custom background views
+Color.green.opacity(0.1)
+}
 }
 ```
 
@@ -226,12 +226,12 @@ ToastView(<Label>) {
 
 ``` swift
 .toast(isPresented: $presentingToast) {
-  ToastView("Loading...") {
-    // EmptyView()
-  } background: {
-    // EmptyView()
-  }
-  .toastViewStyle(IndefiniteProgressToastViewStyle())
+ToastView("Loading...") {
+// EmptyView()
+} background: {
+// EmptyView()
+}
+.toastViewStyle(IndefiniteProgressToastViewStyle())
 }
 ```
 

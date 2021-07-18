@@ -1,272 +1,142 @@
-<h1 align="center">
-<img src="ToastUI.svg" alt="ToastUI logo" width="50%">
-</h1>
+# Compiler Interrupts
 
-<h3 align="center">
-A simple way to show toast in SwiftUI
-</h3>
+Compiler Interrupts are instrumentation-based and light-weight, allowing frequent interrupts with little performance impact. Compiler Interrupts instead enable efficient, automatic high-rate polling on a shared thread, which performs other work between polls.
 
-<p align="center">
-<strong><a href="https://quanshousio.github.io/ToastUI/">Documentation</a></strong>
-•
-<strong><a href="#getting-started">Example</a></strong>
-•
-<strong><a href="CHANGELOG.md">Change Log</a></strong>
-</p>
+This repository contains source code for Compiler Interrupts framework, its C API, examples and benchmarks. Check out the [white paper](https://dl.acm.org/doi/10.1145/3453483.3454107) for more info.
 
-<p align="center">
-<a href="#swift-package-manager"><img alt="Swift Package Manager"
-src="https://img.shields.io/badge/SwiftPM-compatible-informational"></a>
-<a href="#cocoapods"><img alt="CocoaPods" src="https://img.shields.io/cocoapods/v/ToastUI"></a>
-<a href="#requirements">
-<img alt="Platform" src="https://img.shields.io/cocoapods/p/ToastUI"></a>
-<a href="#license"><img alt="License" src="https://img.shields.io/cocoapods/l/ToastUI"></a>
-</p>
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/29722055/89260921-d4f74c00-d5f2-11ea-8a5d-31be17671139.gif" alt="demo" width="42%">
-</p>
-
-## Overview
-
-`ToastUI` provides you a simple way to present toast, head-up display (HUD), custom alert, or any SwiftUI views on top of everything in SwiftUI.
-
-* [Getting started](#getting-started)
-* [Requirements](#requirements)
-* [Installation](#installation)
-* [Documentation](#documentation)
-* [Contributing](#contributing)
-* [Author](#author)
-* [Acknowledgements](#acknowledgements)
-* [License](#license)
-
-## Getting started
-
-Here is an example to present an indefinite progress indicator HUD and dismiss it after 2 seconds.
-
-<img src="https://user-images.githubusercontent.com/29722055/89260980-e4769500-d5f2-11ea-9f1f-7368ce738fd4.gif"/>
-
-``` swift
-struct ContentView: View {
-@State private var presentingToast: Bool = false
-
-var body: some View {
-Button {
-presentingToast = true
-} label: {
-Text("Tap me")
-.bold()
-.foregroundColor(.white)
-.padding()
-.background(Color.accentColor)
-.cornerRadius(8.0)
-}
-.toast(isPresented: $presentingToast, dismissAfter: 2.0) {
-print("Toast dismissed")
-} content: {
-ToastView("Loading...")
-.toastViewStyle(IndefiniteProgressToastViewStyle())
-}
-}
-}
-```
-
-You can also present custom alerts or any SwiftUI views of your choice.
-
-<img src="https://user-images.githubusercontent.com/29722055/89261021-f6583800-d5f2-11ea-9354-8d67ba5cdad6.gif"/>
-
-``` swift
-struct ContentView: View {
-@State private var presentingToast: Bool = false
-
-var body: some View {
-Button {
-presentingToast = true
-} label: {
-Text("Tap me")
-.bold()
-.foregroundColor(.white)
-.padding()
-.background(Color.accentColor)
-.cornerRadius(8.0)
-}
-.toast(isPresented: $presentingToast) {
-ToastView {
-VStack {
-Text("Hello from ToastUI")
-.padding(.bottom)
-.multilineTextAlignment(.center)
-
-Button {
-presentingToast = false
-} label: {
-Text("OK")
-.bold()
-.foregroundColor(.white)
-.padding(.horizontal)
-.padding(.vertical, 12.0)
-.background(Color.accentColor)
-.cornerRadius(8.0)
-}
-}
-}
-}
-}
-}
-```
-
-Have a look at the [ `ToastUISample` ](ToastUISample) project for more examples and also check out the [Documentation](#documentation) below.
+[Rust API](https://github.com/bitslab/compiler-interrupts-rs) is available. [`cargo-compiler-interrupts`](https://github.com/bitslab/cargo-compiler-interrupts) subcommand is also available for enabling seamless Compiler Interrupts integration to any Rust packages.
 
 ## Requirements
 
-* iOS 13.0+ | tvOS 13.0+
-* Xcode 12.0+ | Swift 5.3+
+* [LLVM 12](https://releases.llvm.org/) or [LLVM 9](https://releases.llvm.org/) is required. Other LLVM versions are not officially supported. You can check the LLVM version by running `llvm-config --version`.
+* Linux system is required for running the benchmarks.
 
-## Installation
+## Build
 
-#### Swift Package Manager
-
-`ToastUI` is available through [Swift Package Manager](https://swift.org/package-manager/).
-
-For app integration, add `ToastUI` to an existing Xcode project as a package dependency:
-
-1. From the **File** menu, select **Swift Packages > Add Package Dependency...**
-2. Enter https://github.com/quanshousio/ToastUI into the package repository URL text field.
-3. Xcode should choose updates package up to the next version option by default.
-
-For package integration, add the following line to the `dependencies` parameter in your `Package.swift` .
-
-``` swift
-dependencies: [
-.package(url: "https://github.com/quanshousio/ToastUI.git", from: "1.0.0")
-]
+```sh
+cd src
+make
+cd ../lib  # compiled artifacts are exported to `lib` directory
 ```
 
-#### CocoaPods
+Compiler Interrupts framework (`CompilerInterrupt.so`) and its C API library (`libci.a` and `libci.so`) are exported to the `lib` directory.
 
-`ToastUI` is available through [CocoaPods](https://cocoapods.org). To install it, add the following line to your `Podfile` :
+## Examples
 
-``` ruby
-pod 'ToastUI'
+* Build and run the example:
+
+```sh
+cd example
+make
+./orig_demo           # original binary
+./ci_llvm_demo        # CI-integrated binary
+./ci_mult_files       # compiled using multiple source files
+./ci_modularity_demo  # compiled using a CI-instrumented library
 ```
+
+* `gcc_demo` is the original, unmodified binary. It simply spawns multiple threads to print out a thread-local counter. Check out the [`demo.c`](example/demo.c) source code for more info.
+* `ci_llvm_demo` is the same as `gcc_demo`, except that it has been integrated with Compiler Interrupts. You should expect to see *a lot* of `CI: last interval = {} IR` besides ordinary counter prints. These CI prints are from `interrupt_handler` function, which is called by the Compiler Interrupts every 1000 instructions.
+* `ci_mult_files` and `ci_modularity_demo` demonstrate the modularity and flexibility when integrating the Compiler Interrupts for your program. Check out the [`example/Makefile`](example/Makefile) for more info.
+
+## Usage
+
+### Register the handler
+
+```c
+#include "ci_lib.h"
+
+void interrupt_handler(long ic) {
+  __thread static long previous_ic = 0;
+  printf("CI: last interval = %ld IR\n", ic - previous_ic);
+  previous_ic = ic;
+}
+
+int main() {
+  register_ci(1000, 1000, interrupt_handler);
+  // your code
+}
+```
+
+* Define a new function to handle Compiler Interrupts. The function should take one `long` integer as the parameter. Cumulative instruction count is provided through that parameter.
+* Call `register_ci` with an IR interval, cycles interval and the just-defined handler.
+* All Compiler Interrupts APIs are thread-specific, meaning other threads would not be interrupted if you register the handler in the main thread and vice versa. Check out the [API documentation](#api) below.
+
+### Compilation
+
+```sh
+CI_ROOT=$(pwd) # assume we are in the root folder of the repository
+gcc -S -emit-llvm -I$(CI_ROOT)/src main.c -L$(CI_ROOT)/lib -Wl,-rpath,$(CI_ROOT)/lib -o main.ll -lci # 1
+opt -S -postdomtree -mem2reg -indvars -loop-simplify -branch-prob -scalar-evolution < main.ll > opt_main.ll # 2
+opt -S -load CompilerInterrupt.so -logicalclock -inst-gran=2 -commit-intv=100 -all-dev=100 < opt_main.ll > ci_main.ll # 3
+gcc ci_main.ll -o ci_main # 4
+```
+
+* Link the API library and emit the LLVM IR from your code.
+* Run `opt` with given built-in pass for overhead optimization.
+* Run `opt` with the Compiler Interrupts framework. `-logicalclock` must be provided, followed by the arguments for the framework.
+* Compile the LLVM IR generated from `opt`. You will now have the binary with Compiler Interrupts integrated.
 
 ## Documentation
 
-For more detailed documentation, please see **[here](https://quanshousio.github.io/ToastUI/)**.
+### API
 
-#### Presenting
+Compiler Interrupts C API are defined in [`src/ci_lib.h`](src/ci_lib.h). All APIs are thread-specific, meaning other threads would not be interrupted if you register the handler in the main thread and vice versa.
 
-`ToastUI` supports presenting any SwiftUI views from anywhere. You just need to add `toast()` view modifier and provide your views, much like using `alert()` or `sheet()` .
+| Function                                        | Description                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------------- |
+| `void register_ci(int, int, ci_handler)`        | Registers the Compiler Interrupts handler with given IR and cycles interval |
+| `void deregister_ci(void)`                      | De-registers the Compiler Interrupts handler                                |
+| `void register_ci_disable_hook(ci_margin_hook)` | Registers a function to be called just before CI is disabled                |
+| `void register_ci_enable_hook(ci_margin_hook)`  | Registers a function to be called just after CI is enabled                  |
+| `void ci_disable(void)`                         | Disables Compiler Interrupts                                                |
+| `void ci_enable(void)`                          | Enables Compiler Interrupts                                                 |
+| `void instr_disable(void)`                      | Disables probe instrumentation                                              |
+| `void instr_enable(void)`                       | Enables probe instrumentation                                               |
 
-``` swift
-.toast(isPresented: $presentingToast) {
-// your SwiftUI views here
-}
+[Rust API](https://github.com/bitslab/compiler-interrupts-rs) is also available for Rust programs.
+
+### Framework configuration
+
+* Compiler Interrupts leverages LLVM's analysis and transformation pass backend. Compiler Interrupts can be configured during the optimization stage. `-logicalclock` must be provided, followed by the arguments for the framework.
+
+| Argument        | Type    | Description                                                                                                                                                                                                 |
+| --------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `inst-gran`     | Integer | Select instrumentation granularity <br/> 0: Per instruction; 1: Optimized instrumentation; 2. Optimized instrumentation with statistics collection; 3. Per basic block; 4: Per function                     |
+| `config`        | Integer | Select configuration type <br/> 0: Single-threaded thread-local logical clock; 1: Single-threaded passed logical clock 2; Multi-threaded thread-local logical clock; 3. Multi-threaded passed logical clock |
+| `defclock`      | Boolean | Choose whether to define clock in the pass                                                                                                                                                                  |
+| `clock-type`    | Integer | Choose clock type <br/> 0: Predictive; 1: Instantaneous                                                                                                                                                     |
+| `mem-ops-cost`  | Integer | Interval in terms of number of instruction cost, for push to global logical clock                                                                                                                           |
+| `target-cycles` | Integer | Target interval in cycles                                                                                                                                                                                   |
+| `commit-intv`   | Integer | Interval in terms of number of instruction cost, for commit to local counter.                                                                                                                               |
+| `all-dev`       | Integer | Deviation allowed for branch costs for averaging                                                                                                                                                            |
+| `config-file`   | String  | Configuration file path for the classes & cost of instructions                                                                                                                                              |
+| `in-cost-file`  | String  | Cost file from where cost of library functions will be imported                                                                                                                                             |
+| `out-cost-file` | String  | Cost file where cost of library functions will be exported                                                                                                                                                  |
+## Benchmarks
+
+### Setup the environment
+
+```sh
+cd src
+chmod +x ./setup.sh
+sudo ./setup.sh
 ```
 
-There are two types of `toast()` view modifier. For more usage information, check out the [examples](ToastUISample).
+The setup script will change some system settings and create some directories. You should always carefully examine the source code before running anything with `sudo`.
 
-* `toast(isPresented:dismissAfter:onDismiss:content:)` – presents a toast when the given boolean binding is true.
-* `toast(item:onDismiss:content:)` – presents a toast using the given item as a data source for the toast's content.
+### List of benchmarks
 
-#### ToastView
+* MTCP benchmarks ([benchmarks/mtcp](benchmarks/mtcp)).
+* Shenango benchmarks ([benchmarks/shenango](benchmarks/shenango), [benchmarks/cpuminer-multi](benchmarks/cpuminer-multi)).
+* Server delegation benchmarks ([benchmarks/server_delegation](benchmarks/server_delegation)).
+* Accuracy and Overhead benchmarks ([benchmarks/accuracy_and_overhead](benchmarks/accuracy_and_overhead)).
 
-`ToastUI` comes with `ToastView`, which visually represented as a rounded rectangle shape that contains your provided views and has a default thin blurred background.
+Check out the [white paper](https://dl.acm.org/doi/10.1145/3453483.3454107) for more info about benchmarks.
 
-``` swift
-.toast(isPresented: $presentingToast) {
-ToastView("Hello from ToastUI")
-}
-```
+## Contact
 
-Layout of `ToastView` is demonstrated in this figure below.
-
-``` swift
-+-----------------------------+
-|                             |
-|  <Background>               |
-|                             |
-|        +-----------+        |
-|        |           |        |
-|        | <Content> |        |
-|        |           |        |
-|        |           |        |
-|        |  <Label>  |        |
-|        +-----------+        |
-|                             |
-|                             |
-|                             |
-+-----------------------------+
-
-ToastView(<Label>) {
-<Content>
-} background: {
-<Background>
-}
-```
-
-`ToastView` with custom content views and custom background views.
-
-``` swift
-.toast(isPresented: $presentingToast) {
-ToastView("Saved!") {
-// custom content views
-Image(systemName: "arrow.down.doc.fill")
-.font(.system(size: 48))
-.foregroundColor(.green)
-.padding()
-} background: {
-// custom background views
-Color.green.opacity(0.1)
-}
-}
-```
-
-`ToastView` using [built-in styles](#styling) and without background.
-
-``` swift
-.toast(isPresented: $presentingToast) {
-ToastView("Loading...") {
-// EmptyView()
-} background: {
-// EmptyView()
-}
-.toastViewStyle(IndefiniteProgressToastViewStyle())
-}
-```
-
-#### Styling
-
-`ToastUI` supports seven different `ToastViewStyle` s out-of-the-box. You have to use `ToastView` and set the style accordingly by using `toastViewStyle(_:)` modifier.
-
-* `DefaultProgressToastViewStyle()` – shows an empty toast if user does not provide anything. `ToastView` uses this style by default.
-* `IndefiniteProgressToastViewStyle()` – shows an indefinite circular progress indicator.
-* `DefiniteProgressToastViewStyle(value:total:)` – shows a definite circular progress indicator from 0 to 100%.
-* `SuccessToastViewStyle()` – shows a success toast.
-* `ErrorToastViewStyle()` – shows an error toast.
-* `WarningToastViewStyle()` - shows a warning toast.
-* `InfoToastViewStyle()` – shows an information toast.
-
-`ToastUI` includes a `UIVisualEffectView` wrapper through `cocoaBlur()` view modifier, which is more flexible than existing [ `blur(radius:opaque:)` ](https://developer.apple.com/documentation/swiftui/view/blur(radius:opaque:)) in SwiftUI.
-
-* `cocoaBlur(blurStyle:vibrancyStyle:blurIntensity:)` - for iOS.
-* `cocoaBlur(blurStyle:blurIntensity:)` - for tvOS.
-
-## Contributing
-
-All issue reports, feature requests, pull requests and GitHub stars are welcomed and much appreciated.
-
-## Author
-
-Quan Tran ([@quanshousio](https://quanshousio.com))
-
-## Acknowledgements
-
-* [Fruta](https://developer.apple.com/documentation/app_clips/fruta_building_a_feature-rich_app_with_swiftui) - `UIVisualEffectView` wrapper for SwiftUI written by Apple.
-* [ScaledMetricOniOS13](https://gist.github.com/apptekstudios/e5f282a67beaa85dc725d1d98ec74191) - `@ScaledMetric` property wrapper for iOS 13.
-* [SVProgressHUD](https://github.com/SVProgressHUD/SVProgressHUD) - original design of the circular progress HUD.
-* [SwiftUI Custom Styling](https://swiftui-lab.com/custom-styling) - an informative article on SwiftUI custom styling.
+For assistance in understanding and/or using the Compiler Interrupts framework, please send an email to nbasu4@uic.edu. All issue reports and pull requests are welcomed and much appreciated.
 
 ## License
 
-`ToastUI` is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+`CompilerInterrupts` is available under the MIT license. See the [LICENSE](LICENSE) file for more info.

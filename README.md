@@ -82,7 +82,7 @@ gcc ci_main.ll -o ci_main # 4
 
 Compiler Interrupts C API are defined in [`src/ci_lib.h`](src/ci_lib.h). All APIs are thread-specific, meaning other threads would not be interrupted if you register the handler in the main thread and vice versa.
 
-| Function <img width=470/>                       | Description                                                                 |
+| Function <img width=500; height=0/>             | Description                                                                 |
 | ----------------------------------------------- | --------------------------------------------------------------------------- |
 | `void register_ci(int, int, ci_handler)`        | Registers the Compiler Interrupts handler with given IR and cycles interval |
 | `void deregister_ci(void)`                      | De-registers the Compiler Interrupts handler                                |

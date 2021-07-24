@@ -8,16 +8,6 @@
 import SwiftUI
 import ToastUI
 
-// swiftlint:disable identifier_name
-struct ToastItem: Identifiable, Equatable {
-  let id = UUID()
-  var content: AnyView
-
-  static func == (lhs: ToastItem, rhs: ToastItem) -> Bool {
-    lhs.id == rhs.id
-  }
-}
-
 struct CustomizedToastWithoutToastViewExample: View {
   @State private var presentingToast: Bool = false
   @State private var blurBackground: Bool = true
@@ -30,6 +20,7 @@ struct CustomizedToastWithoutToastViewExample: View {
         Spacer()
         Text(text)
           .bold()
+          .fixedSize()
           .foregroundColor(.white)
           .padding()
           .background(Color.green)
@@ -70,8 +61,8 @@ struct CustomizedToastWithoutToastViewExample: View {
 
 struct CustomizedToastUsingItemExample: View {
   private var toastItems = ["First Toast Item", "Second Toast Item"]
-  @State private var selectedToast = 0
 
+  @State private var selectedToast = 0
   @State private var toastItem: ToastItem?
   @State private var username: String = ""
   @State private var email: String = ""
@@ -101,12 +92,13 @@ struct CustomizedToastUsingItemExample: View {
         }
       }
     }
-    .frame(maxWidth: 300)
+    .frame(width: 300)
   }
 
   private var firstToastView: some View {
     VStack {
       Text("Hello from ToastUI")
+        .fixedSize()
         .padding(.bottom)
         .multilineTextAlignment(.center)
 
@@ -114,12 +106,12 @@ struct CustomizedToastUsingItemExample: View {
         toastItem = nil
       }
     }
-    .frame(maxWidth: 300)
+    .frame(width: 300)
   }
 
   private var secondToastView: some View {
     VStack {
-      Text("Create a new account").bold()
+      Text("Create a new account").bold().fixedSize()
       #if os(iOS)
       TextField("Username", text: $username)
         .frame(height: 44)
@@ -148,6 +140,11 @@ struct CustomizedToastUsingItemExample: View {
         .padding()
       #endif
 
+      #if os(macOS)
+      TextField("Username", text: $username)
+      TextField("Email", text: $email)
+      #endif
+
       Spacer().frame(height: 16.0)
 
       HStack {
@@ -162,7 +159,7 @@ struct CustomizedToastUsingItemExample: View {
         }
       }
     }
-    .frame(maxWidth: 300)
+    .frame(width: 300)
   }
 }
 
@@ -181,6 +178,7 @@ struct ShowSuccessToastAfterCompletedExample: View {
             timer.invalidate()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
               presentingProgressView = false
+              value = 0
             }
           } else {
             value += Double.random(in: 10 ... 25)
@@ -197,6 +195,73 @@ struct ShowSuccessToastAfterCompletedExample: View {
     .toast(isPresented: $presentingSuccessView, dismissAfter: 2.0) {
       ToastView("Success")
         .toastViewStyle(SuccessToastViewStyle())
+    }
+  }
+}
+
+struct CustomToastViewStyle: ToastViewStyle {
+  #if os(iOS) || os(tvOS)
+  var color: UIColor
+  #endif
+
+  #if os(macOS)
+  var color: NSColor
+  #endif
+
+  func makeBody(configuration: Configuration) -> some View {
+    CustomToastView(configuration: configuration, color: color)
+  }
+
+  struct CustomToastView: View {
+    let configuration: Configuration
+    #if os(iOS) || os(tvOS)
+    let color: UIColor
+    #endif
+
+    #if os(macOS)
+    let color: NSColor
+    #endif
+
+    var body: some View {
+      VStack {
+        // we skipped the background view of the ToastView
+        // configuration.background
+        configuration.label.fixedSize()
+        configuration.content
+      }
+      .padding()
+      .background(
+        RoundedRectangle(cornerRadius: 8.0)
+          .foregroundColor(.init(color))
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+      )
+    }
+  }
+}
+
+// swiftlint:disable:next type_name
+struct CustomizedToastUsingToastViewStyleExample: View {
+  @State private var presentingToast: Bool = false
+  @State private var brightness: CGFloat = 0.5
+
+  var body: some View {
+    VStack {
+      HStack {
+        Text("Brightness")
+        Slider(value: $brightness, in: 0 ... 1)
+      }
+      CustomButton("Tap me") {
+        presentingToast = true
+      }
+    }
+    .padding()
+    .toast(isPresented: $presentingToast, dismissAfter: 2.0) {
+      ToastView("This is the logo of ToastUI") { // label
+        ToastUIImage(width: 67.43) // content
+      } background: {
+        // background view will be ignored by CustomToastViewStyle
+      }
+      .toastViewStyle(CustomToastViewStyle(color: .init(white: brightness, alpha: 1)))
     }
   }
 }

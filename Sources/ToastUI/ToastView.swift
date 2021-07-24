@@ -38,10 +38,20 @@ where Background: View, Label: View, Content: View {
 
   private var configuration: ToastViewStyleConfiguration
 
+  #if os(iOS) || os(tvOS)
   private let backgroundView = VisualEffectView(
     blurStyle: .prominent,
     blurIntensity: 0.13
   )
+  #endif
+
+  #if os(macOS)
+  private let backgroundView = VisualEffectView(
+    material: .fullScreenUI,
+    blendingMode: .behindWindow,
+    state: .followsWindowActiveState
+  )
+  #endif
 
   /// The content and behavior of the view.
   public var body: some View {
@@ -51,27 +61,19 @@ where Background: View, Label: View, Content: View {
 
 // MARK: Initializers
 
-extension ToastView {
+public extension ToastView {
   /// Creates an empty `ToastView`.
-  public init()
+  init()
   where Background == EmptyView, Label == EmptyView, Content == EmptyView {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView)
     )
   }
 
-  /// Creates a `ToastView` based on a style configuration.
-  ///
-  /// - Parameter configuration: A `ToastView` style configuration.
-  public init(_ configuration: ToastViewStyleConfiguration)
-  where Background == EmptyView, Label == EmptyView, Content == EmptyView {
-    self.configuration = configuration
-  }
-
   /// Creates an empty `ToastView` with text label from a localized string.
   ///
   /// - Parameter titleKey: The key for the `ToastView`'s localized title.
-  public init(_ titleKey: LocalizedStringKey)
+  init(_ titleKey: LocalizedStringKey)
   where Background == EmptyView, Label == Text, Content == EmptyView {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView),
@@ -83,7 +85,7 @@ extension ToastView {
   ///
   /// - Parameter title: A string that describes the `ToastView`.
   @_disfavoredOverload
-  public init<S>(_ title: S)
+  init<S>(_ title: S)
   where S: StringProtocol, Background == EmptyView, Label == Text, Content == EmptyView {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView),
@@ -92,13 +94,13 @@ extension ToastView {
   }
 }
 
-extension ToastView {
+public extension ToastView {
   /// Creates a `ToastView` with custom `content` view and text label from a localized string.
   ///
   /// - Parameters:
   ///   - titleKey: The key used to look up the localized title for the label.
   ///   - content: A view builder that creates a view for the content of `ToastView`.
-  public init(_ titleKey: LocalizedStringKey, @ViewBuilder content: () -> Content)
+  init(_ titleKey: LocalizedStringKey, @ViewBuilder content: () -> Content)
   where Background == EmptyView, Label == Text {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView),
@@ -113,7 +115,7 @@ extension ToastView {
   ///   - title: A string that describes the text label.
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   @_disfavoredOverload
-  public init<S>(_ title: S, @ViewBuilder content: () -> Content)
+  init<S>(_ title: S, @ViewBuilder content: () -> Content)
   where S: StringProtocol, Background == EmptyView, Label == Text {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView),
@@ -123,7 +125,7 @@ extension ToastView {
   }
 }
 
-extension ToastView {
+public extension ToastView {
   /// Creates a `ToastView` with custom `content` and `background` views,
   /// and text label from a localized string.
   ///
@@ -131,7 +133,7 @@ extension ToastView {
   ///   - titleKey: The key used to look up the localized title for the label.
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   ///   - background: A view builder that creates a view for the background of `ToastView`.
-  public init(
+  init(
     _ titleKey: LocalizedStringKey,
     @ViewBuilder content: () -> Content,
     @ViewBuilder background: () -> Background
@@ -151,7 +153,7 @@ extension ToastView {
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   ///   - background: A view builder that creates a view for the background of `ToastView`.
   @_disfavoredOverload
-  public init<S>(
+  init<S>(
     _ title: S,
     @ViewBuilder content: () -> Content,
     @ViewBuilder background: () -> Background
@@ -164,11 +166,11 @@ extension ToastView {
   }
 }
 
-extension ToastView {
+public extension ToastView {
   /// Creates a `ToastView` with custom `content` view.
   ///
   /// - Parameter content: A view builder that creates a view for the content of `ToastView`.
-  public init(@ViewBuilder content: () -> Content)
+  init(@ViewBuilder content: () -> Content)
   where Background == EmptyView, Label == EmptyView {
     self.configuration = ToastViewStyleConfiguration(
       background: AnyView(backgroundView),
@@ -177,13 +179,13 @@ extension ToastView {
   }
 }
 
-extension ToastView {
+public extension ToastView {
   /// Creates a `ToastView` with custom `content` and `label` views.
   ///
   /// - Parameters:
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   ///   - label: A view builder that creates a view for the label of `ToastView`.
-  public init(
+  init(
     @ViewBuilder content: () -> Content,
     @ViewBuilder label: () -> Label
   ) where Background == EmptyView {
@@ -199,7 +201,7 @@ extension ToastView {
   /// - Parameters:
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   ///   - background: A view builder that creates a view for the background of `ToastView`.
-  public init(
+  init(
     @ViewBuilder content: () -> Content,
     @ViewBuilder background: () -> Background
   ) where Label == EmptyView {
@@ -215,7 +217,7 @@ extension ToastView {
   ///   - content: A view builder that creates a view for the content of `ToastView`.
   ///   - label: A view builder that creates a view for the label of `ToastView`.
   ///   - background: A view builder that creates a view for the background of `ToastView`.
-  public init(
+  init(
     @ViewBuilder content: () -> Content,
     @ViewBuilder label: () -> Label,
     @ViewBuilder background: () -> Background

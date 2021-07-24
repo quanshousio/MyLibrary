@@ -15,6 +15,10 @@ private let backgroundColor = Color(.secondarySystemBackground)
 private let backgroundColor = Color(.darkGray)
 #endif
 
+#if os(macOS)
+private let backgroundColor = Color(.windowBackgroundColor)
+#endif
+
 /// The default `ToastViewStyle`.
 ///
 /// You have to use this style in order to make customized `ToastView`.
@@ -33,9 +37,9 @@ public struct DefaultToastViewStyle: ToastViewStyle {
     )
   }
 
-  internal struct DefaultToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 16
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct DefaultToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 16
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     let background: AnyView?
     let label: AnyView?
@@ -44,7 +48,7 @@ public struct DefaultToastViewStyle: ToastViewStyle {
     var body: some View {
       VStack {
         content
-        label
+        label.fixedSize()
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -68,16 +72,24 @@ public struct IndefiniteProgressToastViewStyle: ToastViewStyle {
     IndefiniteProgressToastView(background: configuration.background, label: configuration.label)
   }
 
-  internal struct IndefiniteProgressToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 36
-    @ScaledMetricProperty(relativeTo: .headline) private var strokeSize: CGFloat = 3
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct IndefiniteProgressToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 36
+    @ScaledMetric(relativeTo: .headline) private var strokeSize: CGFloat = 3
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     @State private var isAnimating: Bool = false
 
     let background: AnyView?
     let label: AnyView?
+
+    #if os(iOS) || os(tvOS)
+    private let labelColor = Color(.label)
+    #endif
+
+    #if os(macOS)
+    private let labelColor = Color(.labelColor)
+    #endif
 
     var body: some View {
       VStack {
@@ -85,7 +97,7 @@ public struct IndefiniteProgressToastViewStyle: ToastViewStyle {
           .trim(from: 0.02, to: 0.98)
           .stroke(
             AngularGradient(
-              gradient: Gradient(colors: [backgroundColor, Color(.label)]),
+              gradient: Gradient(colors: [backgroundColor, labelColor]),
               center: .center,
               startAngle: .degrees(0),
               endAngle: .degrees(360)
@@ -100,12 +112,20 @@ public struct IndefiniteProgressToastViewStyle: ToastViewStyle {
               ? Animation.linear(duration: 1.0).repeatForever(autoreverses: false)
               : nil
           )
-          .onAppear { isAnimating = true }
-          .onDisappear { isAnimating = false }
+          .onAppear {
+            DispatchQueue.main.async {
+              isAnimating = true
+            }
+          }
+          .onDisappear {
+            isAnimating = false
+          }
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -120,8 +140,7 @@ public struct IndefiniteProgressToastViewStyle: ToastViewStyle {
 /// indicator. This style is similar to the `IndefiniteProgressToastViewStyle`,
 /// but show determinate progress instead.
 public struct DefiniteProgressToastViewStyle<Value>: ToastViewStyle
-where Value: BinaryFloatingPoint
-{
+where Value: BinaryFloatingPoint {
   @Binding private var value: Value
   @Binding private var total: Value
 
@@ -148,11 +167,11 @@ where Value: BinaryFloatingPoint
     )
   }
 
-  internal struct DefiniteProgressToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 36
-    @ScaledMetricProperty(relativeTo: .headline) private var strokeSize: CGFloat = 3
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct DefiniteProgressToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 36
+    @ScaledMetric(relativeTo: .headline) private var strokeSize: CGFloat = 3
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     @State private var isAnimating: Bool = false
 
@@ -177,11 +196,21 @@ where Value: BinaryFloatingPoint
           )
           .frame(width: iconSize, height: iconSize)
           .rotationEffect(.degrees(-90))
-          .animation(.linear)
+          .animation(isAnimating ? .linear : nil)
+          .onAppear {
+            DispatchQueue.main.async {
+              isAnimating = true
+            }
+          }
+          .onDisappear {
+            isAnimating = false
+          }
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -204,10 +233,10 @@ public struct SuccessToastViewStyle: ToastViewStyle {
     SuccessToastView(background: configuration.background, label: configuration.label)
   }
 
-  internal struct SuccessToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 32
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct SuccessToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 32
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     let background: AnyView?
     let label: AnyView?
@@ -220,8 +249,10 @@ public struct SuccessToastViewStyle: ToastViewStyle {
           .foregroundColor(.green)
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -244,10 +275,10 @@ public struct ErrorToastViewStyle: ToastViewStyle {
     FailureToastView(background: configuration.background, label: configuration.label)
   }
 
-  internal struct FailureToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 32
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct FailureToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 32
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     let background: AnyView?
     let label: AnyView?
@@ -260,8 +291,10 @@ public struct ErrorToastViewStyle: ToastViewStyle {
           .foregroundColor(.red)
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -284,10 +317,10 @@ public struct WarningToastViewStyle: ToastViewStyle {
     WarningToastView(background: configuration.background, label: configuration.label)
   }
 
-  internal struct WarningToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 32
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct WarningToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 32
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     let background: AnyView?
     let label: AnyView?
@@ -300,8 +333,10 @@ public struct WarningToastViewStyle: ToastViewStyle {
           .foregroundColor(.yellow)
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
@@ -324,10 +359,10 @@ public struct InfoToastViewStyle: ToastViewStyle {
     InfoToastView(background: configuration.background, label: configuration.label)
   }
 
-  internal struct InfoToastView: View {
-    @ScaledMetricProperty(relativeTo: .headline) private var iconSize: CGFloat = 32
-    @ScaledMetricProperty(relativeTo: .headline) private var paddingSize: CGFloat = 20
-    @ScaledMetricProperty(relativeTo: .headline) private var cornerSize: CGFloat = 9
+  struct InfoToastView: View {
+    @ScaledMetric(relativeTo: .headline) private var iconSize: CGFloat = 32
+    @ScaledMetric(relativeTo: .headline) private var paddingSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .headline) private var cornerSize: CGFloat = 9
 
     let background: AnyView?
     let label: AnyView?
@@ -340,8 +375,10 @@ public struct InfoToastViewStyle: ToastViewStyle {
           .foregroundColor(.blue)
 
         label
+          .fixedSize()
           .font(.headline)
           .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
       }
       .padding(paddingSize)
       .background(backgroundColor)
